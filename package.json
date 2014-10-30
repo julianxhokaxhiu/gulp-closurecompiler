@@ -1,0 +1,45 @@
+{
+  "name": "gulp-closurecompiler",
+  "description": "The ClosureCompiler.js Gulp Task",
+  "version": "0.0.1",
+  "homepage": "https://github.com/julianxhokaxhiu/gulp-closurecompiler",
+  "author": {
+    "name": "Julian Xhokaxhiu",
+    "email": "info@julianxhokaxhiu.com",
+    "url": "http://julianxhokaxhiu.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/julianxhokaxhiu/gulp-closurecompiler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/julianxhokaxhiu/gulp-closurecompiler/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/julianxhokaxhiu/gulp-closurecompiler/blob/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "main": "gulp-closurecompiler.js",
+  "keywords": [
+    "gulpplugin",
+    "closure",
+    "compiler",
+    "google",
+    "js",
+    "javascript"
+  ],
+  "dependencies": {
+    "closurecompiler": "^1.2",
+    "through2": "^0.4.1",
+    "gulp-util": "^2.2.14",
+    "extend": "^2.0"
+  }
+}
