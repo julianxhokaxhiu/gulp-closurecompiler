@@ -41,24 +41,25 @@ module.exports = function (options, gccOptions) {
 		},
 		beforeEnd = function() {
 			var filePaths = files.map(function(file){ return file.path; }),
-				firstFile = files[0];
+				firstFile = files[0],
+				gccCallback = function ( error, data ) {
+					if ( data ) {
+						var outFile = new gulpUtil.File({
+							base: firstFile.base,
+							contents: new Buffer( data ),
+							cwd: firstFile.cwd,
+							path: path.join(firstFile.base, options.fileName)
+						});
+
+						this.emit( 'data', outFile );
+						this.emit( 'end' );
+					} else {
+						this.emit( 'error', new gulpUtil.PluginError(PLUGIN_NAME, error) );
+					}
+				}.bind( this );
 
 			// Run the GCC
-			closureCompiler.compile( filePaths, gccOptions, function (error, data){
-				if ( data ) {
-					var outFile = new gulpUtil.File({
-						base: firstFile.base,
-						contents: new Buffer( data ),
-						cwd: firstFile.cwd,
-						path: path.join(firstFile.base, options.fileName)
-					});
-
-					this.emit( 'data', outFile );
-					this.emit( 'end' );
-				} else {
-					this.emit( 'error', new gulpUtil.PluginError(PLUGIN_NAME, error) );
-				}
-			}.bind(this) );
+			closureCompiler.compile( filePaths, gccOptions, gccCallback );
 		};
 
 	// Check if at least a destionation directory have been given
