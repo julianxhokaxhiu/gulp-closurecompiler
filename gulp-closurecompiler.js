@@ -54,10 +54,10 @@ module.exports = function (options, gccOptions) {
 					});
 
 					this.emit( 'data', outFile );
+					this.emit( 'end' );
 				} else {
 					this.emit( 'error', new gulpUtil.PluginError(PLUGIN_NAME, error) );
 				}
-				this.emit( 'end' );
 			}.bind(this) );
 		};
 
