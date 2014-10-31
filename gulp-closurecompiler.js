@@ -24,51 +24,52 @@
 
 const PLUGIN_NAME = 'gulp-closurecompiler';
 
-var gulpUtil = require('gulp-util'),
-	through = require('through2'),
+var closureCompiler = require('closurecompiler'),
+	gulpUtil = require('gulp-util'),
+	through = require('through'),
 	extend = require('extend'),
-	closureCompiler = require("closurecompiler"),
-	fs = require('fs'),
-	compileScripts = function(files, dest, options){
-		closureCompiler.compile( files, options, function (error, result){
-			if ( result ) {
-				fs.writeFile( dest , result );
-			} else {
-				throw new gulpUtil.PluginError(PLUGIN_NAME, error);
-			}
-		})
-	},
-	compilerTaskTimeoutId = null;
+	Buffer = require('buffer').Buffer,
+	path = require('path');
 
 // Plugin level function(dealing with files)
-module.exports = function (options) {
+module.exports = function (options, gccOptions) {
 
-	// Merge default options with the ones provided by the user
-	options = extend({
-		'compilation_level': 'SIMPLE_OPTIMIZATIONS'
-	}, options);
+	// This will live our array of files
+	var files = [],
+		forEachFile = function (file) {
+			files.push( file );
+		},
+		beforeEnd = function() {
+			var filePaths = files.map(function(file){ return file.path; }),
+				firstFile = files[0];
+
+			// Run the GCC
+			closureCompiler.compile( filePaths, gccOptions, function (error, data){
+				if ( data ) {
+					var outFile = new gulpUtil.File({
+						base: firstFile.base,
+						contents: new Buffer( data ),
+						cwd: firstFile.cwd,
+						path: path.join(firstFile.base, options.fileName)
+					});
+
+					this.emit( 'data', outFile );
+				} else {
+					this.emit( 'error', new gulpUtil.PluginError(PLUGIN_NAME, error) );
+				}
+				this.emit( 'end' );
+			}.bind(this) );
+		};
 
 	// Check if at least a destionation directory have been given
-	if (!options.dest) {
-		throw new gulpUtil.PluginError(PLUGIN_NAME, 'options.dest is missing');
+	if (!options.fileName) {
+		throw new gulpUtil.PluginError(PLUGIN_NAME, 'options.fileName is missing');
 	}
 
-	// Create a stream where all the files will be read
-	var files = [],
-		stream = through.obj(function(file, enc, callback) {
-		files.push( file.path );
+	// Merge default options with the ones provided by the user
+	gccOptions = extend({
+		'compilation_level': 'SIMPLE_OPTIMIZATIONS'
+	}, gccOptions);
 
-		// Not really satisfied with this but actually works
-		if ( compilerTaskTimeoutId ) clearTimeout( compilerTaskTimeoutId );
-		compilerTaskTimeoutId = setTimeout( function(){
-			var dest = options.dest;
-			delete options['dest'];
-			compileScripts( files, dest, options );
-		}, 1000 );
-
-		this.push(file);
-		return callback();
-	});
-
-	return stream;
+	return through( forEachFile, beforeEnd );
 };
