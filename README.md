@@ -19,22 +19,31 @@ var gulpCC = require("gulp-closurecompiler");
 gulp
 .src( './src/*.js' )
 .pipe(
-	gulpCC({
-		dest: './dest/scripts.min.js'
-	})
+	gulpCC(
+		{
+			fileName: 'scripts.min.js'
+		},
+		{
+			// ClosureCompiler.js options here...
+		}
+	)
+)
+.pipe(
+	gulp.dest( './dest/' )
 )
 ```
 
 ## API
 
-### gulp-closurecompiler(options)
+### gulp-closurecompiler( options, gccOptions )
 
-#### options.dest
+#### options.fileName
 Type: `String` (Required)
 
-Destination to write the compiled assets
+The name of the file that you can want to be created
 
-All other options for [ClosureCompiler.js](https://github.com/dcodeIO/ClosureCompiler.js) are passed through.
+#### gccOptions
+See [ClosureCompiler.js](https://github.com/dcodeIO/ClosureCompiler.js) options.
 
 ## License
 
