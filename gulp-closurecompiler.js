@@ -40,6 +40,11 @@ module.exports = function (options, gccOptions) {
 			files.push( file );
 		},
 		beforeEnd = function() {
+			if (files.length === 0) {
+				this.queue(null);
+				return;
+			}
+
 			var filePaths = files.map(function(file){ return file.path; }),
 				firstFile = files[0],
 				gccCallback = function ( error, data ) {
