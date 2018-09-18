@@ -1,7 +1,7 @@
 {
   "name": "gulp-closurecompiler",
   "description": "The ClosureCompiler.js Gulp Task",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/julianxhokaxhiu/gulp-closurecompiler",
   "author": {
     "name": "Julian Xhokaxhiu",
